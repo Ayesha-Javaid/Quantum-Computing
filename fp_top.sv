@@ -3,7 +3,7 @@
 // Uses gen_number_8 (most expensive fingerprint) replicated NUM_FP times
 
 module fp_top #(
-  parameter NUM_FP = 18  // Change this value for each synthesis run
+  parameter NUM_FP = 18  // Change this value: 18, 40, 100, 200, 400, 800, 1200, 1600, 2000
 ) (
   input bit clk,
   input bit rst,
@@ -15,13 +15,30 @@ module fp_top #(
   input bit [16-1:0] tcp_sport,
   input bit [16-1:0] tcp_window,
   input bit [16-1:0] ip_id,
-  output logic [16-1:0] fp_num [0:NUM_FP-1],
+  output logic [16-1:0] fp_num0,
+  output logic [16-1:0] fp_num1,
+  output logic [16-1:0] fp_num2,
+  output logic [16-1:0] fp_num3,
+  output logic [16-1:0] fp_num4,
+  output logic [16-1:0] fp_num5,
+  output logic [16-1:0] fp_num6,
+  output logic [16-1:0] fp_num7,
+  output logic [16-1:0] fp_num8,
+  output logic [16-1:0] fp_num9,
+  output logic [16-1:0] fp_num10,
+  output logic [16-1:0] fp_num11,
+  output logic [16-1:0] fp_num12,
+  output logic [16-1:0] fp_num13,
+  output logic [16-1:0] fp_num14,
+  output logic [16-1:0] fp_num15,
+  output logic [16-1:0] fp_num16,
+  output logic [16-1:0] fp_num17,
   output logic fp_det
 );
 
   logic fp_detected [0:NUM_FP-1];
   
-  // Generate multiple instances of gen_number_8 (most expensive fingerprint)
+  // Generate multiple instances of gen_number_8
   genvar i;
   generate
     for(i = 0; i < NUM_FP; i = i + 1) begin : fp_gen
@@ -40,19 +57,49 @@ module fp_top #(
     end
   endgenerate
 
-  // Counter for each fingerprint detection
-  genvar j;
-  generate
-    for(j = 0; j < NUM_FP; j = j + 1) begin : counter_gen
-      always@(posedge clk) begin
-        if(rst == 0)
-          fp_num[j] <= 16'b0;
-        else if(fp_detected[j] == 1'b1) begin
-          fp_num[j] <= fp_num[j] + 16'b1; 
-        end
-      end
+  // Counters for each fingerprint
+  always@(posedge clk) begin
+    if(rst == 0) begin
+      fp_num0 <= 16'b0;
+      fp_num1 <= 16'b0;
+      fp_num2 <= 16'b0;
+      fp_num3 <= 16'b0;
+      fp_num4 <= 16'b0;
+      fp_num5 <= 16'b0;
+      fp_num6 <= 16'b0;
+      fp_num7 <= 16'b0;
+      fp_num8 <= 16'b0;
+      fp_num9 <= 16'b0;
+      fp_num10 <= 16'b0;
+      fp_num11 <= 16'b0;
+      fp_num12 <= 16'b0;
+      fp_num13 <= 16'b0;
+      fp_num14 <= 16'b0;
+      fp_num15 <= 16'b0;
+      fp_num16 <= 16'b0;
+      fp_num17 <= 16'b0;
     end
-  endgenerate
+    else begin
+      if(NUM_FP > 0 && fp_detected[0]) fp_num0 <= fp_num0 + 1;
+      if(NUM_FP > 1 && fp_detected[1]) fp_num1 <= fp_num1 + 1;
+      if(NUM_FP > 2 && fp_detected[2]) fp_num2 <= fp_num2 + 1;
+      if(NUM_FP > 3 && fp_detected[3]) fp_num3 <= fp_num3 + 1;
+      if(NUM_FP > 4 && fp_detected[4]) fp_num4 <= fp_num4 + 1;
+      if(NUM_FP > 5 && fp_detected[5]) fp_num5 <= fp_num5 + 1;
+      if(NUM_FP > 6 && fp_detected[6]) fp_num6 <= fp_num6 + 1;
+      if(NUM_FP > 7 && fp_detected[7]) fp_num7 <= fp_num7 + 1;
+      if(NUM_FP > 8 && fp_detected[8]) fp_num8 <= fp_num8 + 1;
+      if(NUM_FP > 9 && fp_detected[9]) fp_num9 <= fp_num9 + 1;
+      if(NUM_FP > 10 && fp_detected[10]) fp_num10 <= fp_num10 + 1;
+      if(NUM_FP > 11 && fp_detected[11]) fp_num11 <= fp_num11 + 1;
+      if(NUM_FP > 12 && fp_detected[12]) fp_num12 <= fp_num12 + 1;
+      if(NUM_FP > 13 && fp_detected[13]) fp_num13 <= fp_num13 + 1;
+      if(NUM_FP > 14 && fp_detected[14]) fp_num14 <= fp_num14 + 1;
+      if(NUM_FP > 15 && fp_detected[15]) fp_num15 <= fp_num15 + 1;
+      if(NUM_FP > 16 && fp_detected[16]) fp_num16 <= fp_num16 + 1;
+      if(NUM_FP > 17 && fp_detected[17]) fp_num17 <= fp_num17 + 1;
+    end
+  end
 
   // OR reduction for fp_det signal
   always@(posedge clk) begin
