@@ -1,9 +1,9 @@
 // Auto-Generated top module for the syn-det generator 
 // Modified: Parametrized fingerprint generation for scalability testing
-// Uses gen_number_8 (most expensive fingerprint) replicated NUM_FP times
+// FIXED: All fingerprints forced to synthesize (no optimization away)
 
 module fp_top #(
-  parameter NUM_FP = 18  // Change this value: 18, 40, 100, 200, 400, 800, 1200, 1600, 2000
+  parameter NUM_FP = 18  // Change this: 18, 40, 100, 200, 400, 800, 1200, 1600, 2000
 ) (
   input bit clk,
   input bit rst,
@@ -33,12 +33,13 @@ module fp_top #(
   output logic [16-1:0] fp_num15,
   output logic [16-1:0] fp_num16,
   output logic [16-1:0] fp_num17,
+  output logic [31:0] fp_det_count,  // Total count of ALL fingerprint detections
   output logic fp_det
 );
 
-  logic fp_detected [0:NUM_FP-1];
+  (* keep = "true" *) logic fp_detected [0:NUM_FP-1];
   
-  // Generate multiple instances of gen_number_8
+  // Generate multiple instances of gen_number_8 (all must synthesize)
   genvar i;
   generate
     for(i = 0; i < NUM_FP; i = i + 1) begin : fp_gen
@@ -57,7 +58,7 @@ module fp_top #(
     end
   endgenerate
 
-  // Counters for each fingerprint
+  // Counters for first 18 fingerprints (mapped to individual outputs)
   always@(posedge clk) begin
     if(rst == 0) begin
       fp_num0 <= 16'b0;
@@ -101,7 +102,22 @@ module fp_top #(
     end
   end
 
-  // OR reduction for fp_det signal
+  // Global counter: counts ALL fingerprint detections across ALL fingerprints
+  // This forces synthesis to keep ALL fingerprints (18-2000)
+  (* keep = "true" *)
+  always@(posedge clk) begin
+    if(rst == 0)
+      fp_det_count <= 32'b0;
+    else begin
+      for(int k = 0; k < NUM_FP; k = k + 1) begin
+        if(fp_detected[k])
+          fp_det_count <= fp_det_count + 1;
+      end
+    end
+  end
+
+  // OR reduction for fp_det signal (must evaluate ALL fingerprints)
+  (* keep = "true" *)
   always@(posedge clk) begin
     fp_det <= 1'b0;
     for(int k = 0; k < NUM_FP; k = k + 1) begin
