@@ -1,8 +1,6 @@
 `timescale 1ns/1ps
 
-module top #(
-  parameter NUM_FP = 18  // Must match fp_top parameter
-) (
+module top (
     // gmii/mii rx channel
     input  logic        rx_dv,
     input  logic [63:0] rxd,
@@ -24,8 +22,26 @@ module top #(
     input  logic        rst_n,
     input  logic        link_active,
 
-    // fp detector outputs (dynamic array based on NUM_FP)
-    output logic [15:0] fp_num [0:NUM_FP-1],
+    // fp detector outputs
+    output logic [15:0] fp_num0,
+    output logic [15:0] fp_num1,
+    output logic [15:0] fp_num2,
+    output logic [15:0] fp_num3,
+    output logic [15:0] fp_num4,
+    output logic [15:0] fp_num5,
+    output logic [15:0] fp_num6,
+    output logic [15:0] fp_num7,
+    output logic [15:0] fp_num8,
+    output logic [15:0] fp_num9,
+    output logic [15:0] fp_num10,
+    output logic [15:0] fp_num11,
+    output logic [15:0] fp_num12,
+    output logic [15:0] fp_num13,
+    output logic [15:0] fp_num14,
+    output logic [15:0] fp_num15,
+    output logic [15:0] fp_num16,
+    output logic [15:0] fp_num17,
+    output logic [31:0] fp_det_count,  // Total detections across ALL fingerprints
     output logic        fp_det,
 
     output logic [15:0] ip_id,
@@ -73,8 +89,8 @@ module top #(
         .packet      (packet)
     );
 
-    // Instantiate FP top module with parametrized NUM_FP
-    fp_top #(.NUM_FP(NUM_FP)) inst_fp_top (
+    // Instantiate FP top module
+    fp_top inst_fp_top (
         .clk        (clk),
         .rst        (rst_n),
         .valid      (valid),
@@ -85,7 +101,25 @@ module top #(
         .tcp_ack    (tcp_ack),
         .tcp_dport  (tcp_dport),
         .ip_dst     (ip_dst),
-        .fp_num     (fp_num),
+        .fp_num0    (fp_num0),
+        .fp_num1    (fp_num1),
+        .fp_num2    (fp_num2),
+        .fp_num3    (fp_num3),
+        .fp_num4    (fp_num4),
+        .fp_num5    (fp_num5),
+        .fp_num6    (fp_num6),
+        .fp_num7    (fp_num7),
+        .fp_num8    (fp_num8),
+        .fp_num9    (fp_num9),
+        .fp_num10   (fp_num10),
+        .fp_num11   (fp_num11),
+        .fp_num12   (fp_num12),
+        .fp_num13   (fp_num13),
+        .fp_num14   (fp_num14),
+        .fp_num15   (fp_num15),
+        .fp_num16   (fp_num16),
+        .fp_num17   (fp_num17),
+        .fp_det_count(fp_det_count),  // Global counter for all fingerprints
         .fp_det     (fp_det)
     );
 
